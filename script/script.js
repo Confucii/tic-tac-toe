@@ -5,37 +5,39 @@ const playerFactory = (name, marker) => {
 };
 
 const gameBoard = (() => {
-  let board = [[], [], []];
+  let _board = [[], [], []];
 
-  const reset = () => {
-    board = [[], [], []];
-  };
-
-  const display = () => {
+  const _display = () => {
     const boardTable = document.querySelectorAll("td");
     boardTable.forEach((cell, index) => {
       const cellRef = cell;
-      cellRef.textContent = board[Math.floor(index / 3)][index % 3];
+      cellRef.textContent = _board[Math.floor(index / 3)][index % 3];
     });
+  };
+
+  const reset = () => {
+    _board = [[], [], []];
   };
 
   const fillCell = function fillCell(playerMarker) {
     if (this.textContent === "") {
-      board[this.dataset.row][this.dataset.column] = playerMarker;
-      display();
+      _board[this.dataset.row][this.dataset.column] = playerMarker;
+      _display();
     }
   };
 
   return {
-    display,
     fillCell,
     reset,
   };
 })();
 
-const boardTable = document.querySelectorAll("td");
-const playerMarker = "O";
+const gameFlow = (() => {
+  const boardTable = document.querySelectorAll("td");
+  const playerMarker = "O";
 
-boardTable.forEach((cell) => {
-  cell.addEventListener("click", gameBoard.fillCell.bind(cell, playerMarker));
-});
+  boardTable.forEach((cell) => {
+    cell.addEventListener("click", gameBoard.fillCell.bind(cell, playerMarker));
+  });
+  return {};
+})();
