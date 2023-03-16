@@ -5,11 +5,7 @@ const playerFactory = (name, marker) => {
 };
 
 const gameBoard = (() => {
-  let board = [
-    ["X", "X", "O"],
-    ["O", "O", "X"],
-    ["X", "O", "X"],
-  ];
+  let board = [[], [], []];
 
   const reset = () => {
     board = [[], [], []];
@@ -22,10 +18,24 @@ const gameBoard = (() => {
       cellRef.textContent = board[Math.floor(index / 3)][index % 3];
     });
   };
+
+  const fillCell = function fillCell(playerMarker) {
+    if (this.textContent === "") {
+      board[this.dataset.row][this.dataset.column] = playerMarker;
+      display();
+    }
+  };
+
   return {
     display,
+    fillCell,
     reset,
   };
 })();
 
-gameBoard.display();
+const boardTable = document.querySelectorAll("td");
+const playerMarker = "O";
+
+boardTable.forEach((cell) => {
+  cell.addEventListener("click", gameBoard.fillCell.bind(cell, playerMarker));
+});

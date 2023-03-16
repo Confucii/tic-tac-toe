@@ -22,11 +22,10 @@ table {
 }
 
 td {
-  border: 1px solid;
-}
-
-td {
+  width: 33.3%;
+  height: 33.3%;
   text-align: center;
+  border: 1px solid;
   font-size: calc(1rem + 6vw);
   user-select: none;
 }
