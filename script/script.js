@@ -5,11 +5,15 @@ const playerFactory = (name, marker) => {
 };
 
 const gameBoard = (() => {
-  const board = [
+  let board = [
     ["X", "X", "O"],
     ["O", "O", "X"],
     ["X", "O", "X"],
   ];
+
+  const reset = () => {
+    board = [[], [], []];
+  };
 
   const display = () => {
     const boardTable = document.querySelectorAll("td");
@@ -20,6 +24,7 @@ const gameBoard = (() => {
   };
   return {
     display,
+    reset,
   };
 })();
 

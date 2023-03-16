@@ -28,4 +28,5 @@ td {
 td {
   text-align: center;
   font-size: calc(1rem + 6vw);
+  user-select: none;
 }
