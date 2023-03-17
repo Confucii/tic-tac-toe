@@ -19,13 +19,14 @@ body {
 table {
   width: 25%;
   height: 25vw;
+  table-layout: fixed;
 }
 
 td {
-  width: 33.3%;
-  height: 33.3%;
+  width: 33%;
+  height: 33%;
   text-align: center;
   border: 1px solid;
-  font-size: calc(1rem + 6vw);
+  font-size: calc(1rem + 5vw);
   user-select: none;
 }

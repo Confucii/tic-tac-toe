@@ -8,8 +8,8 @@ const gameBoard = (() => {
   let _board = [[], [], []];
 
   const _display = () => {
-    const boardTable = document.querySelectorAll("td");
-    boardTable.forEach((cell, index) => {
+    const _boardTable = document.querySelectorAll("td");
+    _boardTable.forEach((cell, index) => {
       const cellRef = cell;
       cellRef.textContent = _board[Math.floor(index / 3)][index % 3];
     });
@@ -19,9 +19,9 @@ const gameBoard = (() => {
     _board = [[], [], []];
   };
 
-  const fillCell = function fillCell(playerMarker) {
+  const fillCell = function fillCell(_playerMarker) {
     if (this.textContent === "") {
-      _board[this.dataset.row][this.dataset.column] = playerMarker;
+      _board[this.dataset.row][this.dataset.column] = _playerMarker;
       _display();
     }
   };
@@ -33,11 +33,44 @@ const gameBoard = (() => {
 })();
 
 const gameFlow = (() => {
-  const boardTable = document.querySelectorAll("td");
-  const playerMarker = "O";
+  let _playerMarker = "";
 
-  boardTable.forEach((cell) => {
-    cell.addEventListener("click", gameBoard.fillCell.bind(cell, playerMarker));
+  const initPlayers = () => {
+    const playerOne = playerFactory("Alex", "X");
+    const playerTwo = playerFactory("Senya", "O");
+
+    return {
+      playerOne,
+      playerTwo,
+    };
+  };
+
+  const _players = initPlayers();
+
+  const gameStart = () => {
+    gameBoard.reset();
+
+    _playerMarker = _players.playerOne.getMarker();
+  };
+
+  const _changePlayer = () => {
+    if (_playerMarker === _players.playerOne.getMarker()) {
+      _playerMarker = _players.playerTwo.getMarker();
+    } else {
+      _playerMarker = _players.playerOne.getMarker();
+    }
+  };
+
+  const __boardTable = document.querySelectorAll("td");
+
+  __boardTable.forEach((cell) => {
+    cell.addEventListener("click", () => {
+      gameBoard.fillCell.call(cell, _playerMarker);
+      _changePlayer();
+    });
   });
-  return {};
+
+  return { gameStart };
 })();
+
+gameFlow.gameStart();
