@@ -137,6 +137,16 @@ const gameFlow = (() => {
     }
   };
 
+  const announceWinner = () => {
+    let winnerName;
+    if (_playerMarker === _players.playerOne.getMarker()) {
+      winnerName = _players.playerOne.getName();
+    } else {
+      winnerName = _players.playerTwo.getName();
+    }
+    return winnerName;
+  };
+
   const _boardTable = document.querySelectorAll("td");
 
   _boardTable.forEach((cell) => {
@@ -144,11 +154,17 @@ const gameFlow = (() => {
       if (_turn < 10) {
         if (cell.textContent === "" && !_gameOver) {
           gameBoard.fillCell.call(cell, _playerMarker);
-          _changePlayer();
           _turn += 1;
           if (_turn > 5) {
             _gameOver = gameBoard.checkWin(cell);
+            const gameState = document.querySelector(".main p");
+            if (_gameOver) {
+              gameState.textContent = `The winner is ${announceWinner()}!`;
+            } else if (!_gameOver && _turn === 10) {
+              gameState.textContent = "It is a tie!";
+            }
           }
+          _changePlayer();
         }
       }
     });
