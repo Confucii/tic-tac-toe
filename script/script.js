@@ -24,10 +24,8 @@ const gameBoard = (() => {
   };
 
   const fillCell = function fillCell(_playerMarker) {
-    if (this.textContent === "") {
-      _board[this.dataset.row][this.dataset.column] = _playerMarker;
-      _display();
-    }
+    _board[this.dataset.row][this.dataset.column] = _playerMarker;
+    _display();
   };
 
   const checkWin = function checkWin(cell) {
@@ -110,7 +108,8 @@ const gameBoard = (() => {
 
 const gameFlow = (() => {
   let _playerMarker = "";
-  let turn = 1;
+  let _turn = 1;
+  let _gameOver = false;
 
   const initPlayers = () => {
     const playerOne = playerFactory("Alex", "X");
@@ -138,18 +137,19 @@ const gameFlow = (() => {
     }
   };
 
-  const __boardTable = document.querySelectorAll("td");
+  const _boardTable = document.querySelectorAll("td");
 
-  __boardTable.forEach((cell) => {
+  _boardTable.forEach((cell) => {
     cell.addEventListener("click", () => {
-      if (turn < 10) {
-        gameBoard.fillCell.call(cell, _playerMarker);
-        _changePlayer();
-        turn += 1;
-      }
-
-      if (turn > 5) {
-        console.log(gameBoard.checkWin(cell));
+      if (_turn < 10) {
+        if (cell.textContent === "" && !_gameOver) {
+          gameBoard.fillCell.call(cell, _playerMarker);
+          _changePlayer();
+          _turn += 1;
+          if (_turn > 5) {
+            _gameOver = gameBoard.checkWin(cell);
+          }
+        }
       }
     });
   });
