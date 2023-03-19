@@ -20,7 +20,7 @@ body {
 }
 
 .main p {
-  font-size: 1.5rem;
+  font-size: 1.7rem;
 }
 
 table {
@@ -36,4 +36,16 @@ td {
   border: 1px solid;
   font-size: calc(1rem + 5vw);
   user-select: none;
+}
+
+.UI-buttons {
+  display: flex;
+  gap: 20px;
+}
+
+.UI-buttons button {
+  font-size: 1.5rem;
+  padding: 5px 10px;
+  border-radius: 10px;
+  border: 1px solid black;
 }
