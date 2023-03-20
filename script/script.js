@@ -108,6 +108,97 @@ const gameBoard = (() => {
   };
 })();
 
+const computer = (() => {
+  const board = [
+    ["", "", ""],
+    ["", "", ""],
+    ["", "", ""],
+  ];
+
+  const nodeFactory = (state, depth) => {
+    const states = [];
+    const score = -100;
+    return { state, depth, states, score };
+  };
+
+  const checkWinAI = (inputState) => {
+    // Check rows
+    for (let i = 0; i < inputState.length; i += 1) {
+      if (
+        inputState[i][0] !== "" &&
+        inputState[i][0] === inputState[i][1] &&
+        inputState[i][0] === inputState[i][2]
+      ) {
+        return true;
+      }
+    }
+
+    // Check columns
+    for (let j = 0; j < inputState[0].length; j += 1) {
+      if (
+        inputState[0][j] !== "" &&
+        inputState[0][j] === inputState[1][j] &&
+        inputState[0][j] === inputState[2][j]
+      ) {
+        return true;
+      }
+    }
+
+    // Check diagonals
+    if (
+      inputState[0][0] !== "" &&
+      inputState[0][0] === inputState[1][1] &&
+      inputState[0][0] === inputState[2][2]
+    ) {
+      return true;
+    }
+    if (
+      inputState[0][2] !== "" &&
+      inputState[0][2] === inputState[1][1] &&
+      inputState[0][2] === inputState[2][0]
+    ) {
+      return true;
+    }
+
+    // No win condition found
+    return false;
+  };
+
+  const root = nodeFactory(board, 0);
+
+  const generateTree = (inputState, node, player) => {
+    const nodeRef = node;
+
+    board.forEach((row, i) => {
+      row.forEach((cell, j) => {
+        if (inputState[i][j] === "") {
+          const boardCopy = JSON.parse(JSON.stringify(inputState));
+          boardCopy[i][j] = player;
+          const newNode = nodeFactory(boardCopy, node.depth + 1);
+          node.states.push(newNode);
+          if (!checkWinAI(boardCopy)) {
+            generateTree(boardCopy, newNode, player === "X" ? "O" : "X");
+            if (newNode.depth === 9) {
+              newNode.score = 0;
+            }
+          } else if (player === "O") {
+            newNode.score = 10 - newNode.depth;
+          } else if (player === "X") {
+            newNode.score = newNode.depth - 10;
+          }
+          if (node.score < newNode.score) {
+            nodeRef.score = newNode.score;
+          }
+        }
+      });
+    });
+  };
+
+  generateTree(board, root, "X");
+
+  return root;
+})();
+
 const gameFlow = (() => {
   let _playerMarker = "";
   let _turn = 1;
