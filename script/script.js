@@ -1,31 +1,34 @@
-const playerFactory = (name, marker) => {
-  const getName = () => name;
+const playerFactory = (marker) => {
   const getMarker = () => marker;
-  return { getName, getMarker };
+  return { getMarker };
 };
 
 const gameBoard = (() => {
-  let _board = [[], [], []];
+  const board = [
+    ["", "", ""],
+    ["", "", ""],
+    ["", "", ""],
+  ];
 
-  const _display = () => {
-    const _boardTable = document.querySelectorAll("td");
-    _boardTable.forEach((cell, index) => {
-      const _cellRef = cell;
-      _cellRef.textContent = _board[Math.floor(index / 3)][index % 3];
+  const resetBoard = () => {
+    board.forEach((row, i) => {
+      row.forEach((_cell, j) => {
+        board[i][j] = "";
+      });
     });
   };
 
-  const reset = () => {
-    _board = [
-      ["", "", ""],
-      ["", "", ""],
-      ["", "", ""],
-    ];
+  const display = () => {
+    const _boardTable = document.querySelectorAll("td");
+    _boardTable.forEach((cell, index) => {
+      const _cellRef = cell;
+      _cellRef.textContent = board[Math.floor(index / 3)][index % 3];
+    });
   };
 
   const fillCell = function fillCell(_playerMarker) {
-    _board[this.dataset.row][this.dataset.column] = _playerMarker;
-    _display();
+    board[this.dataset.row][this.dataset.column] = _playerMarker;
+    display();
   };
 
   const checkWin = function checkWin(cell) {
@@ -37,7 +40,7 @@ const gameBoard = (() => {
 
     const _checkHorizontal = () => {
       for (let i = 0; i < 2; i += 1) {
-        if (_board[cell.dataset.row][i] === _board[cell.dataset.row][i + 1]) {
+        if (board[cell.dataset.row][i] === board[cell.dataset.row][i + 1]) {
           _overlapCount += 1;
         }
       }
@@ -46,7 +49,7 @@ const gameBoard = (() => {
     const _checkVertical = () => {
       for (let i = 0; i < 2; i += 1) {
         if (
-          _board[i][cell.dataset.column] === _board[i + 1][cell.dataset.column]
+          board[i][cell.dataset.column] === board[i + 1][cell.dataset.column]
         ) {
           _overlapCount += 1;
         }
@@ -55,7 +58,7 @@ const gameBoard = (() => {
 
     const _checkLeftToRightDiag = () => {
       for (let i = 0; i < 2; i += 1) {
-        if (_board[i][i] === _board[i + 1][i + 1]) {
+        if (board[i][i] === board[i + 1][i + 1]) {
           _overlapCount += 1;
         }
       }
@@ -63,7 +66,7 @@ const gameBoard = (() => {
 
     const _checkRightToLeftDiag = () => {
       for (let i = 0, j = 2; i < 2; i += 1, j -= 1) {
-        if (_board[i][j] === _board[i + 1][j - 1]) {
+        if (board[i][j] === board[i + 1][j - 1]) {
           _overlapCount += 1;
         }
       }
@@ -101,8 +104,9 @@ const gameBoard = (() => {
 
   return {
     fillCell,
-    reset,
     checkWin,
+    display,
+    resetBoard,
   };
 })();
 
@@ -112,8 +116,8 @@ const gameFlow = (() => {
   let _gameOver = false;
 
   const initPlayers = () => {
-    const playerOne = playerFactory("Alex", "X");
-    const playerTwo = playerFactory("Senya", "O");
+    const playerOne = playerFactory("X");
+    const playerTwo = playerFactory("O");
 
     return {
       playerOne,
@@ -123,10 +127,15 @@ const gameFlow = (() => {
 
   const _players = initPlayers();
 
-  const gameStart = () => {
-    gameBoard.reset();
+  const resetGame = () => {
+    gameBoard.resetBoard();
 
+    const gameState = document.querySelector(".main p");
+    gameState.textContent = "The game is on!";
     _playerMarker = _players.playerOne.getMarker();
+    _turn = 1;
+    _gameOver = false;
+    gameBoard.display();
   };
 
   const _changePlayer = () => {
@@ -135,16 +144,6 @@ const gameFlow = (() => {
     } else {
       _playerMarker = _players.playerOne.getMarker();
     }
-  };
-
-  const announceWinner = () => {
-    let winnerName;
-    if (_playerMarker === _players.playerOne.getMarker()) {
-      winnerName = _players.playerOne.getName();
-    } else {
-      winnerName = _players.playerTwo.getName();
-    }
-    return winnerName;
   };
 
   const _boardTable = document.querySelectorAll("td");
@@ -159,7 +158,7 @@ const gameFlow = (() => {
             _gameOver = gameBoard.checkWin(cell);
             const gameState = document.querySelector(".main p");
             if (_gameOver) {
-              gameState.textContent = `The winner is ${announceWinner()}!`;
+              gameState.textContent = `The winner is ${_playerMarker}!`;
             } else if (!_gameOver && _turn === 10) {
               gameState.textContent = "It is a tie!";
             }
@@ -170,7 +169,11 @@ const gameFlow = (() => {
     });
   });
 
-  return { gameStart };
+  const _resetBtn = document.querySelector(".reset");
+
+  _resetBtn.addEventListener("click", resetGame);
+
+  return { resetGame };
 })();
 
-gameFlow.gameStart();
+gameFlow.resetGame();
