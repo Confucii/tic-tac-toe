@@ -31,7 +31,7 @@ const gameBoard = (() => {
     display();
   };
 
-  const checkWin = function checkWin(cell) {
+  const checkWin = function checkWin(row, column) {
     let _overlapCount = 0;
 
     const _checkOverlap = () => {
@@ -40,7 +40,7 @@ const gameBoard = (() => {
 
     const _checkHorizontal = () => {
       for (let i = 0; i < 2; i += 1) {
-        if (board[cell.dataset.row][i] === board[cell.dataset.row][i + 1]) {
+        if (board[row][i] === board[row][i + 1]) {
           _overlapCount += 1;
         }
       }
@@ -48,9 +48,7 @@ const gameBoard = (() => {
 
     const _checkVertical = () => {
       for (let i = 0; i < 2; i += 1) {
-        if (
-          board[i][cell.dataset.column] === board[i + 1][cell.dataset.column]
-        ) {
+        if (board[i][column] === board[i + 1][column]) {
           _overlapCount += 1;
         }
       }
@@ -80,14 +78,14 @@ const gameBoard = (() => {
       _checkOverlap();
 
       if (!_overlapCount) {
-        if (cell.dataset.row === "1" && cell.dataset.column === "1") {
+        if (row === "1" && column === "1") {
           _checkLeftToRightDiag();
           _checkOverlap();
           if (!_overlapCount) {
             _checkRightToLeftDiag();
             _checkOverlap();
           }
-        } else if (cell.dataset.row === cell.dataset.column) {
+        } else if (row === column) {
           _checkLeftToRightDiag();
           _checkOverlap();
         } else {
@@ -174,7 +172,10 @@ const gameFlow = (() => {
           gameBoard.fillCell.call(cell, _playerMarker);
           _turn += 1;
           if (_turn > 5) {
-            _gameOver = gameBoard.checkWin(cell);
+            _gameOver = gameBoard.checkWin(
+              cell.dataset.row,
+              cell.dataset.column
+            );
             const gameState = document.querySelector(".main p");
             if (_gameOver) {
               gameState.textContent = `The winner is ${_playerMarker}!`;
