@@ -149,9 +149,28 @@ const gameFlow = (() => {
   const _boardTable = document.querySelectorAll("td");
 
   _boardTable.forEach((cell) => {
+    const cellRef = cell;
+    cell.addEventListener("mouseenter", () => {
+      if (!_gameOver && cell.textContent === "") {
+        cell.classList.add("empty-hover");
+        cellRef.textContent = _playerMarker;
+      }
+    });
+
+    cell.addEventListener("mouseleave", () => {
+      if (!_gameOver && cell.classList.contains("empty-hover")) {
+        cell.classList.remove("empty-hover");
+        cellRef.textContent = "";
+      }
+    });
+
     cell.addEventListener("click", () => {
       if (_turn < 10) {
-        if (cell.textContent === "" && !_gameOver) {
+        if (
+          (cell.textContent === "" && !_gameOver) ||
+          cell.classList.contains("empty-hover")
+        ) {
+          cell.classList.remove("empty-hover");
           gameBoard.fillCell.call(cell, _playerMarker);
           _turn += 1;
           if (_turn > 5) {
@@ -160,6 +179,7 @@ const gameFlow = (() => {
             if (_gameOver) {
               gameState.textContent = `The winner is ${_playerMarker}!`;
             } else if (!_gameOver && _turn === 10) {
+              _gameOver = true;
               gameState.textContent = "It is a tie!";
             }
           }
