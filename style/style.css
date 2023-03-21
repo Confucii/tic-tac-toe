@@ -39,8 +39,8 @@ body {
 }
 
 table {
-  width: 25%;
-  height: 25vw;
+  width: 30%;
+  height: 30vw;
   table-layout: fixed;
 }
 
@@ -49,7 +49,7 @@ td {
   height: 33%;
   text-align: center;
   border: 2px solid #95e1d3;
-  font-size: calc(1rem + 5vw);
+  font-size: calc(1rem + 4.5vw);
   user-select: none;
   color: #eaffd0;
 }
@@ -60,6 +60,7 @@ td {
 
 .UI-buttons {
   display: flex;
+  flex-direction: column;
   gap: 20px;
 }
 
@@ -76,4 +77,13 @@ td {
 
 .UI-buttons button:active {
   background-color: #95e1d3;
+}
+
+.UI-buttons button.active {
+  background-color: #95e1d3;
+}
+
+.game-type {
+  display: flex;
+  gap: 20px;
 }

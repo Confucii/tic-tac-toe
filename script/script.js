@@ -251,7 +251,7 @@ const gameFlow = (() => {
   let _turn = 1;
   let _gameOver = false;
   let currentState = computer.root;
-  const computerPlaying = false;
+  let computerPlaying = false;
 
   const initPlayers = () => {
     const playerOne = playerFactory("X");
@@ -354,6 +354,26 @@ const gameFlow = (() => {
   });
 
   const _resetBtn = document.querySelector(".reset");
+  const _PVEBtn = document.querySelector(".PVP");
+  const _PVPBtn = document.querySelector(".PVE");
+
+  _PVEBtn.addEventListener("click", () => {
+    if (!_PVEBtn.classList.contains("active")) {
+      _PVPBtn.classList.remove("active");
+      _PVEBtn.classList.add("active");
+      resetGame();
+      computerPlaying = false;
+    }
+  });
+
+  _PVPBtn.addEventListener("click", () => {
+    if (!_PVPBtn.classList.contains("active")) {
+      _PVEBtn.classList.remove("active");
+      _PVPBtn.classList.add("active");
+      resetGame();
+      computerPlaying = true;
+    }
+  });
 
   _resetBtn.addEventListener("click", resetGame);
 
