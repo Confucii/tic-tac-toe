@@ -10,6 +10,8 @@ const gameBoard = (() => {
     ["", "", ""],
   ];
 
+  const getBoard = () => board;
+
   const resetBoard = () => {
     board.forEach((row, i) => {
       row.forEach((_cell, j) => {
@@ -26,8 +28,8 @@ const gameBoard = (() => {
     });
   };
 
-  const fillCell = function fillCell(_playerMarker) {
-    board[this.dataset.row][this.dataset.column] = _playerMarker;
+  const fillCell = function fillCell(row, column, _playerMarker) {
+    board[row][column] = _playerMarker;
     display();
   };
 
@@ -105,6 +107,7 @@ const gameBoard = (() => {
     checkWin,
     display,
     resetBoard,
+    getBoard,
   };
 })();
 
@@ -117,7 +120,7 @@ const computer = (() => {
 
   const nodeFactory = (state, depth) => {
     const states = [];
-    const score = -100;
+    let score;
     return { state, depth, states, score };
   };
 
@@ -169,6 +172,12 @@ const computer = (() => {
   const generateTree = (inputState, node, player) => {
     const nodeRef = node;
 
+    if (player === "X") {
+      nodeRef.score = Infinity;
+    } else {
+      nodeRef.score = -Infinity;
+    }
+
     board.forEach((row, i) => {
       row.forEach((cell, j) => {
         if (inputState[i][j] === "") {
@@ -186,7 +195,9 @@ const computer = (() => {
           } else if (player === "X") {
             newNode.score = newNode.depth - 10;
           }
-          if (node.score < newNode.score) {
+          if (player === "O" && nodeRef.score < newNode.score) {
+            nodeRef.score = newNode.score;
+          } else if (player === "X" && nodeRef.score > newNode.score) {
             nodeRef.score = newNode.score;
           }
         }
@@ -196,13 +207,51 @@ const computer = (() => {
 
   generateTree(board, root, "X");
 
-  return root;
+  const findState = (inputState, currentNode) => {
+    let returnState;
+    currentNode.states.forEach((state) => {
+      if (JSON.stringify(state.state) === JSON.stringify(inputState)) {
+        returnState = state;
+      }
+    });
+    return returnState;
+  };
+
+  const findBestMove = (currentNode) => {
+    let bestScore = -Infinity;
+    let bestState;
+    let rowId;
+    let columnId;
+
+    currentNode.states.forEach((state) => {
+      if (state.score > bestScore) {
+        bestScore = state.score;
+        bestState = state.state;
+      }
+    });
+
+    if (bestState) {
+      currentNode.state.forEach((row, i) => {
+        row.forEach((cell, j) => {
+          if (currentNode.state[i][j] !== bestState[i][j]) {
+            rowId = i;
+            columnId = j;
+          }
+        });
+      });
+    }
+    return [rowId, columnId];
+  };
+
+  return { root, findState, findBestMove };
 })();
 
 const gameFlow = (() => {
   let _playerMarker = "";
   let _turn = 1;
   let _gameOver = false;
+  let currentState = computer.root;
+  const computerPlaying = false;
 
   const initPlayers = () => {
     const playerOne = playerFactory("X");
@@ -219,6 +268,7 @@ const gameFlow = (() => {
   const resetGame = () => {
     gameBoard.resetBoard();
 
+    currentState = computer.root;
     const gameState = document.querySelector(".main p");
     gameState.textContent = "The game is on!";
     _playerMarker = _players.playerOne.getMarker();
@@ -254,22 +304,44 @@ const gameFlow = (() => {
     });
 
     cell.addEventListener("click", () => {
+      let cellRow = cell.dataset.row;
+      let cellColumn = cell.dataset.column;
       if (_turn < 10) {
         if (
           (cell.textContent === "" && !_gameOver) ||
           cell.classList.contains("empty-hover")
         ) {
           cell.classList.remove("empty-hover");
-          gameBoard.fillCell.call(cell, _playerMarker);
+
+          gameBoard.fillCell(cellRow, cellColumn, _playerMarker);
           _turn += 1;
-          if (_turn > 5) {
-            _gameOver = gameBoard.checkWin(
-              cell.dataset.row,
-              cell.dataset.column
+
+          if (computerPlaying) {
+            currentState = computer.findState(
+              gameBoard.getBoard(),
+              currentState
             );
+            if (_turn % 2 === 0) {
+              const bestMove = computer.findBestMove(currentState);
+              if (bestMove[0] !== undefined) {
+                [cellRow, cellColumn] = bestMove;
+                _changePlayer();
+                _turn += 1;
+                gameBoard.fillCell(bestMove[0], bestMove[1], _playerMarker);
+                currentState = computer.findState(
+                  gameBoard.getBoard(),
+                  currentState
+                );
+              }
+            }
+          }
+          if (_turn > 5) {
+            _gameOver = gameBoard.checkWin(cellRow, cellColumn);
             const gameState = document.querySelector(".main p");
-            if (_gameOver) {
-              gameState.textContent = `The winner is ${_playerMarker}!`;
+            if (_gameOver && _playerMarker === "X") {
+              gameState.textContent = `The winner is X!`;
+            } else if (_gameOver && _playerMarker === "O") {
+              gameState.textContent = `The winner is O!`;
             } else if (!_gameOver && _turn === 10) {
               _gameOver = true;
               gameState.textContent = "It is a tie!";
