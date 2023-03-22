@@ -11,6 +11,8 @@ The purpose of this project is to study the concepts of factory function and mod
 
 <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg" alt="javascript" width="30" height="30"/><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/html5/html5-original-wordmark.svg" alt="html5" width="30" height="30"/> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/css3/css3-original-wordmark.svg" alt="css3" width="30" height="30"/>
 
+Font by Khurasan!
+
 > AI generated humor: <br>
 > Q: Please tell me a joke about using factory functions in JS <br>
 > A: Sure, here's a joke for you: <br>
